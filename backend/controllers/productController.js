@@ -42,7 +42,13 @@ export const addProduct = async (req,res)=>{
 
 // list all product
 export const listProducts = async (req,res)=>{
-
+    try {
+        const products = await productModel.find({});
+        res.json({success:true, products});
+    } catch (error) {
+        console.log(error);
+        res.json({success:false, message: error.message})
+    }
 }
 
 // remove  product
