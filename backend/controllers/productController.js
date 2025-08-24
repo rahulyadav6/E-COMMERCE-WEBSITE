@@ -40,6 +40,25 @@ export const addProduct = async (req,res)=>{
     }
 }
 
+// update bestseller status
+export const updateBestseller = async (req, res) => {
+    try {
+        const { productId, bestseller } = req.body;
+        const product = await productModel.findByIdAndUpdate(
+            productId,
+            { bestseller },
+            { new: true }
+        );
+        if (!product) {
+            return res.json({ success: false, message: "Product not found" });
+        }
+        res.json({ success: true, message: "Bestseller status updated", product });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
 // list all product
 export const listProducts = async (req,res)=>{
     try {
