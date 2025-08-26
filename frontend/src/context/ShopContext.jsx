@@ -19,27 +19,68 @@ const ShopContextProvider = (props)=>{
     const navigate = useNavigate();
 
 
-    const addToCart = async (itemId, size)=>{
+    const addToCart = async (itemId, size) => {
+    if (!size) {
+        toast.error('Select product size');
+        return;
+    }
 
-        if(!size){
-            toast.error('Select product size');
-            return
-        }
+    // Prevent multiple rapid clicks
+    if (addToCart.isProcessing) {
+        return;
+    }
+    addToCart.isProcessing = true;
 
-
+    try {
         let cartData = structuredClone(cartItems);
-        if(cartData[itemId]){
-            if(cartData[itemId][size]){
+        
+        if (cartData[itemId]) {
+            if (cartData[itemId][size]) {
                 cartData[itemId][size] += 1;
-            }else{
+            } else {
                 cartData[itemId][size] = 1;
             }
-        }else{
+        } else {
             cartData[itemId] = {};
             cartData[itemId][size] = 1;
         }
+
+        // Update local state first for better UX
         setCartItems(cartData);
+
+        // Sync with backend if user is logged in
+        if (token) {
+            try {
+                await axios.post(
+                    backendUrl + '/api/cart/add', 
+                    { itemId, size }, 
+                    { headers: { token } }
+                );
+            } catch (error) {
+                console.log('Backend sync error:', error);
+                
+                // Revert local state on backend error
+                setCartItems(cartItems);
+                
+                // Better error message handling
+                const errorMessage = error.response?.data?.message || 
+                                   error.message || 
+                                   'Failed to add item to cart';
+                toast.error(errorMessage);
+            }
+        }
+    } catch (error) {
+         console.log('=== ERROR DETAILS ===');
+            console.log('Error status:', error.response?.status);
+            console.log('Error data:', error.response?.data);
+            console.log('Request URL:', error.config?.url);
+            console.log('Request method:', error.config?.method);
+            console.log('Backend URL:', backendUrl);
+    } finally {
+        addToCart.isProcessing = false;
     }
+};
+
 
     const getCartCount = ()=>{
         let totalCount = 0;

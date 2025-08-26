@@ -26,7 +26,8 @@ app.use(cors());
 // api endpoints
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
-app.user("api/cart", cartRouter);
+app.use("/api/cart", cartRouter);
+
 app.get('/', (req,res)=>{
     res.send("API IS WORKING FINE");
 })
