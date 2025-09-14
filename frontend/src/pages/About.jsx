@@ -1,7 +1,7 @@
 import React from 'react'
 import Title from '../components/Title'
 import { assets } from '../assets/frontend_assets/assets'
-import Newsletterbox from '../components/Newsletterbox'
+import NewsletterBox from '../components/NewsletterBox'
 
 const About = () => {
   return (
@@ -43,7 +43,7 @@ const About = () => {
 
       </div>
 
-      <Newsletterbox/>
+      <NewsletterBox/>
 
     </div>
   )
